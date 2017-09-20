@@ -4,9 +4,8 @@ import java.util.*;
 public class Huffman {
 	
 	private String input;
-	private Node huffmanTree; //the huffman tree
+	private Node huffmanTree;               //the huffman tree
 	private Map<Character, String> mapping; //maps characters to binary strings
-	
 	
 	/**
 	 * The Huffman constructor
@@ -34,14 +33,46 @@ public class Huffman {
 		 * Remember to store the final tree as a global variable, as you will need it
 		 * to decode your encrypted string
 		 */
+		
+		// Add all leaves to the priority queue
+		for (Map.Entry<Character, Integer> entry : freqMap.entrySet()) {
+			huffman.add(new Node(entry.getKey(), entry.getValue(), null, null));
+		}
+		
+		// merge lowest frequency nodes until only one node remains in the queue
+		while (huffman.size() != 1) {
+			Node lowestFreq1 = huffman.poll();
+			Node lowestFreq2 = huffman.poll();
+			huffman.add(new Node(null, lowestFreq1.freq + lowestFreq2.freq, lowestFreq1, lowestFreq2));
+		}
+		
+		// the last node remaining is the root of our tree
+		huffmanTree = huffman.poll();
+		
+		// build the character to binary string mappings
+		buildBinaryMap(huffmanTree, "");
+	}
+	
+	private void buildBinaryMap(Node current, String binaryString) {
+		if (current.isLeaf()) {
+			mapping.put(current.letter, binaryString); 
+		} else {
+			buildBinaryMap(current.left, binaryString + "0");
+			buildBinaryMap(current.right, binaryString + "1");
+		}
 	}
 	
 	/**
 	 * Use the global mapping to convert your input string into a binary string
 	 */
 	public String encode() {
-		//TODO
-		return null;
+		String result = "";
+		
+		for (Character c : input.toCharArray()) {
+			result += mapping.get(c);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -54,8 +85,23 @@ public class Huffman {
 	 * @return the original string (should be the same as "input")
 	 */
 	public String decode(String encoding) {
-		//TODO
-		return null;
+		String result = "";
+		Node current = huffmanTree;
+		
+		for (Character c : encoding.toCharArray()) {
+			if (current.isLeaf()) {
+				result += current.letter;
+				current = huffmanTree;
+			} else {
+				if (c == '0') {
+					current = current.left;
+				} else {
+					current = current.right;
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**

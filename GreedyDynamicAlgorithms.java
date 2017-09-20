@@ -75,8 +75,73 @@ public class GreedyDynamicAlgorithms {
 	 * @return
 	 */
 	public static List<Direction> optimalGridPath(int[][] grid) {
+		PriorityQueue<Node> toExplore = new PriorityQueue<Node>(new Comparator<Node>( ) {
+			public int compare(Node o1, Node o2) {
+				Node n1 = (Node) o1;
+				Node n2 = (Node) o2;
+				return n1.cost - n2.cost;
+			}
+		});
 		
-		return null;
+		int width  = grid[0].length - 1;
+		int height = grid.length - 1;
+		
+		Node start = new Node(0, 0, grid[0][0], null);
+		Node current = null;
+		toExplore.add(start);
+		
+		while (!toExplore.isEmpty()) {
+			current = toExplore.poll();
+			
+			if (current.col == height && current.row == width) {
+				break;
+			}
+			
+			if (current.row != height) {
+				toExplore.add(new Node(current.row + 1, current.col, grid[current.row + 1][current.col], current));
+			}
+			if (current.col != width) {
+				toExplore.add(new Node(current.row, current.col + 1, grid[current.row][current.col + 1], current));				
+			}
+		}
+		
+		List<Direction> path = new ArrayList<Direction>();
+		while (current.parent != null) {
+//			System.out.print(" <- (" + current.row + ", " + current.col + ")");
+			path.add(current.getParentDirection());
+			current = current.parent;
+		}
+		Collections.reverse(path);
+		
+//		System.out.println();
+//		for (Direction d : path) {
+//			System.out.println(d);
+//		}
+		
+		return path;
+	}
+	
+	private static class Node {
+		int col, row, value, cost;
+		Node parent;
+		
+		public Node(int row, int col, int value, Node parent) {
+			this.row = row;
+			this.col = col;
+			this.value = value;
+			this.parent = parent;
+			
+			if (parent == null) {
+				cost = value;
+			} else {
+				cost = parent.value + value;
+			}
+		}
+		
+		public Direction getParentDirection() {
+			if (this.parent.row == this.row)  return Direction.RIGHT;
+			return Direction.DOWN;
+		}
 	}
 	
 	/**

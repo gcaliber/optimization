@@ -50,8 +50,8 @@ public class MyTests {
 	@Test
 	public void OptimalGridPathSimpleTest() {
 		int[][] grid = new int[][] { { 0, 0, 9, 9 },
-									 { 9, 0, 0, 9 },
-									 { 9, 9, 0, 0 },
+									 { 1, 4, 0, 9 },
+									 { 1, 9, 0, 0 },
 									 { 9, 9, 9, 0 } };
 
 		List<GreedyDynamicAlgorithms.Direction> expected = new ArrayList<GreedyDynamicAlgorithms.Direction>();
